@@ -22,7 +22,7 @@ jobs:
           --health-cmd="mysqladmin ping -h 127.0.0.1 -u root -p123456"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=3
+          --health-retries=5
 
     steps:
       - name: 🧾 Checkout code
@@ -44,7 +44,10 @@ jobs:
           cp .env.example .env
           php artisan key:generate
 
-      - name: 🔧 Setup DB
+      - name: ⏱️ Wait for MySQL
+        run: sleep 15
+
+      - name: 🔧 Run Migrations
         run: php artisan migrate --force
         env:
           DB_CONNECTION: mysql
@@ -54,7 +57,7 @@ jobs:
           DB_USERNAME: root
           DB_PASSWORD: 123456
 
-      - name: 🧪 Run tests
+      - name: 🧪 Run Tests
         run: php artisan test
         env:
           DB_CONNECTION: mysql
